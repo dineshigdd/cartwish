@@ -45,12 +45,12 @@ const SignupPage = () => {
 
                 <div className='image_input_section'>
                     <div className='image_preview'>
-                        <img src={user} id='file-ip-1-preview' />
+                        <img src={ profilePic ? URL.createObjectURL( profilePic ) : user } id='file-ip-1-preview' />
                     </div>
                     <label htmlFor='file-ip-1' className='image_label'>
                         Upload Image
                     </label>
-                    <input type='file' onChange={ e=> setProflePic( e.target.files[0])} id='file-ip-1' className='image_input' />
+                    <input type='file' onChange={ e => setProflePic( e.target.files[0])} id='file-ip-1' className='image_input' />
                 </div>
 
                 {/* Form Inputs */}
