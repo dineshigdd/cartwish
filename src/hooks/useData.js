@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../utils/api-client';
 
-const useData = ( url) => {
-
+const useData = ( endpoint ,  customConfig , deps ) => {
+console.log( customConfig )
   const [ data, setData ] = useState(null);
   const [ error , setError ] = useState('');
   const [ isLoading , setIsLoading ] = useState(false);
@@ -10,7 +10,7 @@ const useData = ( url) => {
   useEffect(() => {
     setIsLoading(true)
     apiClient
-        .get(url)
+        .get(endpoint, customConfig )
         .then( (res) => {           
           setData( res.data )
           setIsLoading( false )
@@ -19,7 +19,7 @@ const useData = ( url) => {
           setError( err.message )
           setIsLoading( false )
        });
-  },[]);
+  },deps ? deps : []);
 
   return { data, error , isLoading }
   
