@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './ProductsList.css'
 import ProductCard from './ProductCard'
 import useData from '../../hooks/useData'
@@ -8,10 +8,9 @@ import { object } from 'zod/v4-mini'
 import Pagination from '../Common/Pagination'
 
 const ProductsList = () => {
-
+  const [ page, setPage ] = useState( 1 )
   const [ search, setSearch ] = useSearchParams();
-  const category = search.get("category")
-  const page = search.get("page")
+  const category = search.get("category");
 
   const { data , error , isLoading } =  useData('/products' , {
       params :{
@@ -20,7 +19,12 @@ const ProductsList = () => {
       page,
     },
   },[ category, page ]);
-   console.log( data )
+   
+
+  useEffect(()=>{    
+    setPage( 1 )
+  }, [category])
+
   const skeletons = [1,2,3,4,5,6,7,8];
 
   {/* for pagination */}
@@ -29,23 +33,24 @@ const ProductsList = () => {
   //   setSearch({ ...currentParams, page })
   // }
 
-  const handlePageChange = ( page ) => {
-      const currentParams = Object.fromEntries([ ...search ])
-      setSearch({ ...currentParams, page : parseInt( currentParams.page ) + 1 })
-    }
+
+  
 
   useEffect(()=>{
     const handleScroll = () =>{
       const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
     
-      if ( scrollTop + clientHeight >= scrollHeight - 1 ){
+      if ( scrollTop + clientHeight >= scrollHeight - 1 && 
+          !isLoading && data && page < data.totalPages ){
         console.log( "Reached to bottom");
-        handlePageChange();
+        setPage( ( prev ) => prev + 1 )
       }
     }
 
-    window.addEventListener( "scroll", handleScroll   )
-  },[])
+    window.addEventListener( "scroll", handleScroll );
+
+    return ()=> window.removeEventListener( "scroll", handleScroll )
+  },[ data , isLoading ])
 
   return (
     <section className="products_list_section">
@@ -62,10 +67,9 @@ const ProductsList = () => {
 
         <div className="products_list">
             { error && <em className='form_error'>{ error }</em>}
-            { isLoading 
-              ? (skeletons.map( n => <ProductCardSkeleton key={ n } />))
-              :  ( data?.products  && data.products.map( product =>
-                  <ProductCard 
+            { data?.products && 
+               ( data.products  && data.products.map( (product) => 
+                  (<ProductCard 
                       key={ product._id }
                       id= { product._id}
                       image = { product.images[0]}
@@ -76,7 +80,7 @@ const ProductsList = () => {
                       stock={ product.stock }
 
                   />
-               ))}            
+               )))}            
         </div>
         {/* for pagination */}
         {/* { 
