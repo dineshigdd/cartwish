@@ -3,9 +3,10 @@ import './ProductsList.css'
 import ProductCard from './ProductCard'
 import useData from '../../hooks/useData'
 import ProductCardSkeleton from './ProductCardSkeleton'
-import { useSearchParams } from 'react-router-dom'
+import { NavLink, useSearchParams } from 'react-router-dom'
 import { object } from 'zod/v4-mini'
 import Pagination from '../Common/Pagination'
+import SingleProduct from '../SingleProduct/SingleProductPage'
 
 const ProductsList = () => {
   const [ page, setPage ] = useState( 1 )
@@ -69,17 +70,19 @@ const ProductsList = () => {
             { error && <em className='form_error'>{ error }</em>}
             { data?.products && 
                ( data.products  && data.products.map( (product) => 
-                  (<ProductCard 
-                      key={ product._id }
-                      id= { product._id}
-                      image = { product.images[0]}
-                      price = { product.price }
-                      title={ product.title }
-                      rating={ product.reviews.rate }
-                      ratingCounts={ product.reviews.count }
-                      stock={ product.stock }
-
+                  (
+                        <ProductCard 
+                          key={ product._id }
+                          id= { product._id}
+                          image = { product.images[0]}
+                          price = { product.price }
+                          title={ product.title }
+                          rating={ product.reviews.rate }
+                          ratingCounts={ product.reviews.count }
+                          stock={ product.stock }
+                      
                   />
+                 
                )))}            
         </div>
         {/* for pagination */}

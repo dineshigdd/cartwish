@@ -1,42 +1,50 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './SingleProductPage.css'
 import QuantityInput from './QuantityInput';
+import { useParams } from 'react-router-dom';
+import useData from '../../hooks/useData';
+import apiClient from '../../utils/api-client';
+import Loader from '../Common/Loader'
 
-const product = {
-  id:1,
-  title:"Product Title",
-  description:`Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime aliquid rerum a? 
-  Fugiat soluta facilis deleniti voluptatibus ab architecto dolores a, vero, beatae veniam error 
-  doloribus quia laudantium? Error fuga consequuntur quia accusantium? Consequatur modi laboriosam saepe culpa, ab atque.`,
-  price: 9.99,
-  images:
-  [
-    "https://placehold.co/500x500?text=Product+Image+1",
-    "https://placehold.co/500x500?text=Product+Image+2",
-    "https://placehold.co/500x500?text=Product+Image+3",
-    "https://placehold.co/500x500?text=Product+Image+4",
-  ],
-  stock:10,
-};
 
 const SingleProductPage = () => {
+  const { id } = useParams();
+ 
+  // const [ product, setProduct ] = useState()
   const [ selectedImage, setSelectedImage ] = useState(0)
+   const [ quantity, setQuantity ] = useState(1);
+  
+  // useEffect(()=>{
+  //   apiClient(`/products/${ id }`)
+  //     .then( res => setProduct( res.data))
+  //     .catch( error => console.log( error ))
+  // },[id])
+
+  const { data: product, error , isLoading } = useData( `/products/${ id }`);
+
+
   return (
-    <section className="align_center single_product">
-      <div className="align_center">
-        <div className="single_product_thumbnails">
+    <section className="align_center single_product">      
+      { error && <em className="form_error">{ error }</em>}
+      { isLoading && <Loader />}
+      { product && (
+        <>
+        <div className="align_center">
+          <div className="single_product_thumbnails">
           {
             product.images.map(( image , index ) => (
               <img 
-                src={ image } 
+                key={ index }               
+                src={ `http://localhost:5000/products/${ image }` } 
                 alt = { product.title }
                 className={ selectedImage === index ? 'selected_image': '' }
                 onClick={ ()=> setSelectedImage( index )}/>
+             
             ))
           }
-        </div>
+          </div>
         <img 
-          src={ product.images[ selectedImage ] }
+          src={ `http://localhost:5000/products/${product.images[ selectedImage ] }` }
           alt={ product.title }
           className='single_product_display'          
         />
@@ -49,12 +57,17 @@ const SingleProductPage = () => {
 
           <h2 className="quantity_title">Quantity:</h2>
           <div className="align_center quantity_input">
-              <QuantityInput />
+              <QuantityInput 
+                  quantity = { quantity }
+                  setQuantity = { setQuantity }
+                  stock = { product.stock }
+                />
           </div>
 
           <button className='search_button add_cart'>Add to Cart</button>
       </div>
-
+    </>
+  )}
      
     </section>
   )
