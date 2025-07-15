@@ -4,13 +4,15 @@ import user from "../../assets/user.webp";
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signup } from "../../services/userServices";
+
 
 const schema = z.object({
     name: z.string().min(3,({ message : "Name should be at least 3 characters."})),
     email: z.string().email({ message: " Please enter valid email" }),
     password: z.string().min( 8, { message: "Password must be at least 8 characters."}),
     cpassword:z.string(),
-    address: z.string().min( 15, { message : "Address must be at least 15 characters."})
+    deliveryAddress: z.string().min( 15, { message : "Address must be at least 15 characters."})
 }).superRefine( ( data , ctx )=>{
     if( data.password !== data.cpassword ){
         ctx.addIssue({
@@ -34,9 +36,20 @@ const SignupPage = () => {
      const { register , 
              handleSubmit , 
              formState: { errors }} = useForm({ resolver: zodResolver( schema )});
+             
+    const [ formError, setFormError ] = useState("")
      
-     const onSubmit = ( formData )=> console.log( formData )
-     console.log( profilePic)
+     const onSubmit = async ( formData )=> { 
+        
+        try{
+            await signup( formData, profilePic ); 
+        }catch( err ){
+            if( err.response && err.response.status === 400 ){
+               setFormError( err.response.data.message )
+            }
+        }
+     }
+     
      
     return (
         <section className='align_center form_page'>
@@ -106,18 +119,18 @@ const SignupPage = () => {
                     </div>
 
                     <div className='signup_textares_section'>
-                        <label htmlFor='address'>Delivery Address</label>
+                        <label htmlFor='deliveryAddress'>Delivery Address</label>
                         <textarea
-                            id='address'
+                            id='deliveryAddress'
                             className='input_textarea'
                             placeholder='Enter delivery address'
-                            { ...register('address')}
+                            { ...register('deliveryAddress')}
                         />
 
                         { errors.address && (<em className='form_error'>{ errors.address.message }</em>)}
                     </div>
                 </div>
-
+                { formError && <em className="form_error">{ formError }</em>}
                 <button className='search_button form_submit' type='submit'>
                     Submit
                 </button>
