@@ -32,17 +32,19 @@ const schema = z.object({
 
 const SignupPage = () => {
 
-     const [ profilePic, setProflePic ] = useState( null )
+     const [ profilePic, setProflePic ] = useState( null );
      const { register , 
              handleSubmit , 
              formState: { errors }} = useForm({ resolver: zodResolver( schema )});
              
-    const [ formError, setFormError ] = useState("")
+    const [ formError, setFormError ] = useState("");
+
      
-     const onSubmit = async ( formData )=> { 
-        
+     const onSubmit = async ( formData )=> {         
         try{
-            await signup( formData, profilePic ); 
+            await signup( formData, profilePic );  
+            window.location = "/";
+
         }catch( err ){
             if( err.response && err.response.status === 400 ){
                setFormError( err.response.data.message )

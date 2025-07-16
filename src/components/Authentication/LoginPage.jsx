@@ -13,24 +13,24 @@ const schema = z.object({
 
 const LoginPage = () => {
 
+    const [ formError, setFormError ] = useState("")
     const { register , 
             handleSubmit, 
-            formState: { errors }} = useForm({ resolver: zodResolver( schema )}); 
-    
-    const [ formError, setFormError ] = useState("")
+            formState: { errors }} = useForm({ resolver: zodResolver( schema )});  
+   
 
-    const onSubmit = async ( formData ) => {
-       
+    const onSubmit = async ( formData ) => {       
         try{
             await login( formData );
+            window.location = "/"
+
         }catch( err ){
             if( err.response && err.response.status === 400 ){
-                console.log( err.response.data.message )
                 setFormError( err.response.data.message );
             }
         }
         
-    }     
+    }; 
          
 
     return (
@@ -44,8 +44,7 @@ const LoginPage = () => {
                         <label htmlFor="email">Email</label>
                         <input 
                             id='email' 
-                            type="email"
-                            
+                            type="email"                            
                             className='form_text_input' 
                             placeholder='Enter your email address'
                             { ...register("email") }
@@ -74,7 +73,7 @@ const LoginPage = () => {
                     </div>                
                 </div>
                 { formError && <em className="form_error">{ formError }</em> }
-                <button className='search_button form_submit'>Submit</button>
+                <button type='submit' className='search_button form_submit'>Submit</button>
             </form>
     </section>
   ) 
