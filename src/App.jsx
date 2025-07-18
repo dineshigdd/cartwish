@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
 import "./App.css"
 import Navbar from './components/Navbar/Navbar'
 import Routing from './components/Routing/Routing'
 import { getJwt, getUser } from './services/userServices'
 import setAuthToken from './components/Authentication/setAuthToken'
+import { addToCartAPI, getCartAPI } from './services/cartServices'
+import 'react-toastify/dist/ReactToastify.css'
 
 setAuthToken( getJwt());
 
@@ -30,23 +33,48 @@ const App = () => {
   },[]);
 
   const addToCart = ( product, quantity ) => {
-      const updateCart = [ ...cart ];
-      const productIndex = updateCart.findIndex( item => item.product._id === product._id );
+      const updatedCart = [ ...cart ];
+      const productIndex = updatedCart.findIndex( item => item.product._id === product._id );
 
      if( productIndex === -1 ){
-        updateCart.push( { product, quantity })
+        updatedCart.push({ product, quantity })
      }else{
-       updateCart[ productIndex ].quantity += quantity;
+       updatedCart[ productIndex ].quantity += quantity;
      }
 
-      setCart( updateCart )
+      setCart( updatedCart )
+
+      addToCartAPI( product._id, quantity )
+        .then( res =>  {
+            toast.success( "Product Added Succesfully!" )
+            
+        })
+        .catch( err => {
+           toast.error( "Failed to add product!")
+          setCart( cart )
+        })
   }
+
+  const getCart = () =>{
+     getCartAPI().then( res => {
+        setCart( res.data )
+     }).catch( error => {
+       toast.error( "something went wrong!  ")
+     })
+  }
+
+  useEffect(()=>{
+    if( user ){
+      getCart()
+    }
+  }, [ user ])
 
   return (
     <div className='app'>
         <Navbar user={ user } cartCount={ cart.length } />
         <main>
-          <Routing addToCart={ addToCart } />          
+          <ToastContainer position='bottom-right' />
+          <Routing addToCart={ addToCart } cart={ cart }/>          
         </main>
     </div>
   )
