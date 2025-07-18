@@ -58,3 +58,7 @@ export function getUser(){
     }
     
 }
+
+export function getJwt(){
+    return localStorage.getItem( tokenName )
+}

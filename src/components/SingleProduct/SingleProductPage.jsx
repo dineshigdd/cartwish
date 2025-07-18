@@ -7,7 +7,7 @@ import apiClient from '../../utils/api-client';
 import Loader from '../Common/Loader'
 
 
-const SingleProductPage = () => {
+const SingleProductPage = ({ addToCart }) => {
   const { id } = useParams();
  
   // const [ product, setProduct ] = useState()
@@ -64,7 +64,7 @@ const SingleProductPage = () => {
                 />
           </div>
 
-          <button className='search_button add_cart'>Add to Cart</button>
+          <button className='search_button add_cart' onClick={()=>addToCart( product , quantity )}>Add to Cart</button>
       </div>
     </>
   )}
