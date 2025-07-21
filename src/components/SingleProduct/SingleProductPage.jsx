@@ -6,13 +6,15 @@ import useData from '../../hooks/useData';
 import apiClient from '../../utils/api-client';
 import Loader from '../Common/Loader'
 import CartContext from '../../contexts/cartContext';
+import UserContext from '../../contexts/userContext';
 
 
 const SingleProductPage = () => {
   const { id } = useParams();   
-  const [ selectedImage, setSelectedImage ] = useState(0)
+  const [ selectedImage, setSelectedImage ] = useState(0);
   const [ quantity, setQuantity ] = useState(1);
   const { addToCart } = useContext( CartContext);
+  const user = useContext( UserContext );
   const { data: product, error , isLoading } = useData( `/products/${ id }`);
 
   
@@ -61,16 +63,21 @@ const SingleProductPage = () => {
           <p className="single_product_description">{ product.description }</p>
           <p className="single_product_price">${product.price.toFixed(2)}</p>
 
-          <h2 className="quantity_title">Quantity:</h2>
-          <div className="align_center quantity_input">
-              <QuantityInput 
-                  quantity = { quantity }
-                  setQuantity = { setQuantity }
-                  stock = { product.stock }
-                />
-          </div>
+          { user && <>
+              <h2 className="quantity_title">Quantity:</h2>
+              <div className="align_center quantity_input">
+                  <QuantityInput 
+                      quantity = { quantity }
+                      setQuantity = { setQuantity }
+                      stock = { product.stock }
+                    />
+              </div>
 
-          <button className='search_button add_cart' onClick={()=>addToCart( product , quantity )}>Add to Cart</button>
+              <button className='search_button add_cart' 
+                  onClick={
+              ()=>addToCart( product , quantity )}>Add to Cart</button>
+        </>
+      }
       </div>
     </>
   )}
