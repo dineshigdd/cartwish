@@ -1,26 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './SingleProductPage.css'
 import QuantityInput from './QuantityInput';
 import { useParams } from 'react-router-dom';
 import useData from '../../hooks/useData';
 import apiClient from '../../utils/api-client';
 import Loader from '../Common/Loader'
+import CartContext from '../../contexts/cartContext';
 
 
-const SingleProductPage = ({ addToCart }) => {
-  const { id } = useParams();
- 
-  // const [ product, setProduct ] = useState()
+const SingleProductPage = () => {
+  const { id } = useParams();   
   const [ selectedImage, setSelectedImage ] = useState(0)
-   const [ quantity, setQuantity ] = useState(1);
-  
-  // useEffect(()=>{
-  //   apiClient(`/products/${ id }`)
-  //     .then( res => setProduct( res.data))
-  //     .catch( error => console.log( error ))
-  // },[id])
-
+  const [ quantity, setQuantity ] = useState(1);
+  const { addToCart } = useContext( CartContext);
   const { data: product, error , isLoading } = useData( `/products/${ id }`);
+
+  
+  /** 
+   //you can also call the backend API as follows
+
+   const [ product, setProduct ] = useState()  
+   useEffect(()=>{
+     apiClient(`/products/${ id }`)
+       .then( res => setProduct( res.data))
+       .catch( error => console.log( error ))
+  },[id])
+
+ **/
 
 
   return (

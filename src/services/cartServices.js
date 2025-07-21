@@ -8,3 +8,17 @@ export function addToCartAPI( id , quantity ) {
 export function getCartAPI(){
     return apiClient.get('/cart')
 }
+
+
+export function increaseProductAPI( id, quantity ){
+    return apiClient.patch(`/cart/increase/${ id }`)
+ }
+
+ export function decreaseProductAPI( id, quantity ){
+    return apiClient.patch(`/cart/decrease/${ id }`)
+ }
+
+
+export function removeFromCartAPI(id){
+    return apiClient.patch(`/cart/remove/decrease/${ id }`)
+}

@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState , useContext } from 'react'
+import UserContext from '../../contexts/userContext'
+import CartContext from '../../contexts/cartContext'
 import './CartPage.css'
 import remove from '../../assets/remove.png'
-import user from '../../assets/user.webp'
 import Table from '../Common/Table'
 import QuantityInput from '../SingleProduct/QuantityInput'
 
 
-const CartPage = ({ cart }) => {
 
+const CartPage = () => {
    
   const [ subTotal, setSubTotal ] = useState(0);
-
+  const user = useContext(UserContext);
+  const { cart , removeFromCart , updateCart } = useContext( CartContext);
+  
   useEffect(()=>{
         let total = 0;
         cart.forEach(({product, quantity }) => {    
@@ -21,15 +24,15 @@ const CartPage = ({ cart }) => {
      setSubTotal(  total )    
     },[ cart ])
 
-
+  
 
   return (
     <section className="align_center cart_page">
         <div className="align_center user_info">
-            <img src={ user } alt="" />
+            <img src={ `http://localhost/profile/${user?.profilePic}` } alt="" />
             <div>
-                <p className="user_name">Harley</p>
-                <p className="user_email">harley@gmail.com</p>
+                <p className="user_name">{ user?.name }</p>
+                <p className="user_email">{ user?.email }</p>
             </div>
         </div>
 
@@ -42,10 +45,19 @@ const CartPage = ({ cart }) => {
                     <td className='align_center table_quantity_input'>
                         <QuantityInput 
                             quantity={ quantity } 
-                            stock={ product.stock }/>
+                            stock={ product.stock }
+                            setQuantity={ updateCart }
+                            cartPage = { true }
+                            productId = { product._id }
+                        />
                     </td>
                     <td>{ quantity * product.price }</td>
-                    <td><img src={ remove } alt="remove icon" className='cart_remove_icon'/></td>
+                    <td><img 
+                            src={ remove } 
+                            alt="remove icon" 
+                            className='cart_remove_icon'
+                            onClick={ ()=> removeFromCart( product._id )}
+                        /></td>
                 </tr>
                 )}
             </tbody>
