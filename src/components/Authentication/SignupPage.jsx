@@ -4,7 +4,8 @@ import user from "../../assets/user.webp";
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signup } from "../../services/userServices";
+import { getUser, signup } from "../../services/userServices";
+import { Navigate } from "react-router-dom";
 
 
 const schema = z.object({
@@ -22,6 +23,7 @@ const schema = z.object({
         })
     }
 })
+
 
 /* or you can do as:
 
@@ -52,7 +54,12 @@ const SignupPage = () => {
         }
      }
      
-     
+    
+  //redirect to homepage if user try to access sign up page after signing in
+    if( getUser()){
+        return <Navigate to='/' />
+    }
+
     return (
         <section className='align_center form_page'>
             <form className='authentication_form signup_form' onSubmit={ handleSubmit( onSubmit )}>
