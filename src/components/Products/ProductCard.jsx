@@ -7,8 +7,7 @@ import { NavLink } from 'react-router-dom';
 import CartContext from '../../contexts/cartContext';
 import UserContext from '../../contexts/userContext';
 
-const ProductCard = ({
-  id,
+const ProductCard = ({  
   product
   // image,
   // price,
@@ -37,9 +36,9 @@ const ProductCard = ({
                 <footer className="align_center product_info_footer">
                     <div className='align_center'>
                         <p className='align_center product_rating'>
-                            <img src={ star } alt="star" /> { product?.rating }                 
+                            <img src={ star } alt="star" /> { product?.reviews.rate }                 
                         </p>
-                        <p className='product_review_count'>{ product?.ratingCounts }</p>
+                        <p className='product_review_count'>{ product?.reviews.counts }</p>
                     </div>
                     { ( product?.stock > 0 ) && user && (
                         <button className="add_to_cart" onClick={() =>{ addToCart( product , 1 )}}>
