@@ -1,4 +1,4 @@
-import React, { useEffect, useState , useContext } from 'react'
+import React, {  useContext, useMemo } from 'react'
 import UserContext from '../../contexts/userContext'
 import CartContext from '../../contexts/cartContext'
 import './CartPage.css'
@@ -9,15 +9,32 @@ import { checkoutAPI } from '../../services/orderServices'
 import { toast } from 'react-toastify'
 
 
-const CartPage = () => {
-   
-  const [ subTotal, setSubTotal ] = useState(0);
+const CartPage = () => {   
+
   const user = useContext(UserContext);
   const { cart , removeFromCart , updateCart , setCart } = useContext( CartContext);
   
-  useEffect(()=>{
+  const subTotal = useMemo(()=>{
         let total = 0;
-        cart.forEach(({product, quantity }) => {    
+        cart.forEach(
+            
+            ({product, quantity }) => {    
+            total +=  product.price * quantity             
+
+        })
+
+     return  total 
+    },[ cart ])
+
+  //if useEffect is used.However useMemo is better in expensive calculation as it use the cache
+  /*
+    const [ subTotal, setSubTotal ] = useState(0);
+
+    useEffect(()=>{
+        let total = 0;
+        cart.forEach(
+            
+            ({product, quantity }) => {    
             total +=  product.price * quantity             
 
         })
@@ -25,7 +42,7 @@ const CartPage = () => {
      setSubTotal(  total )    
     },[ cart ])
 
-  
+    */
   const checkout = ()=>{
     const oldCart = [ ...cart ]
     setCart([])
