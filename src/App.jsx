@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import UserContext from './contexts/userContext'
 import CartContext from './contexts/cartContext'
 import { ToastContainer, toast } from 'react-toastify'
@@ -34,7 +34,7 @@ const App = () => {
    
   },[]);
 
-  const addToCart = ( product, quantity ) => {
+  const addToCart = useCallback(( product, quantity ) => {
       const updatedCart = [ ...cart ];
       const productIndex = updatedCart.findIndex( item => item.product._id === product._id );
 
@@ -55,9 +55,9 @@ const App = () => {
            toast.error( "Failed to add product!")
           setCart( cart )
         })
-  }
+  },[ cart ]);
 
-  const removeFromCart = ( id ) => {
+  const removeFromCart = useCallback(( id ) => {
       const oldCart = [ ...cart ]
       const newCart = oldCart.filter( item => item.product._id !== id )
       setCart( newCart )
@@ -67,9 +67,9 @@ const App = () => {
         toast.error( "Somthing went wrong!")
         setCart( oldCart )
       })
-  }
+  }, [ cart ]);
 
-  const updateCart = ( type , id ) => {
+  const updateCart = useCallback(( type , id ) => {
     const oldCart = [ ... cart ];
     const updatedCart = [ ... cart ];
     const productIndex = updatedCart.findIndex( item =>  item.product._id === id )
@@ -95,15 +95,15 @@ const App = () => {
     }
 
     
-  }
+  },[ cart ]);
 
-  const getCart = () =>{
+  const getCart = useCallback(() =>{
      getCartAPI().then( res => {
         setCart( res.data )
      }).catch( error => {
        toast.error( "something went wrong!  ")
      })
-  }
+  }, [ user ])
 
   useEffect(()=>{
     if( user ){

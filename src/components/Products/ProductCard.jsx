@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { memo, useContext } from 'react'
 import  './ProductCard.css'
 
 import star from '../../assets/white-star.png';
@@ -51,4 +51,5 @@ const ProductCard = ({
   )
 }
 
-export default ProductCard
+export default memo(ProductCard)
+//memo function is used here because this compoennt uses a function wrapped in useCallBack hook in App.jsx

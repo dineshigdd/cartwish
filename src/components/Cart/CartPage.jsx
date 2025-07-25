@@ -1,4 +1,4 @@
-import React, {  useContext, useMemo } from 'react'
+import React, {  memo, useContext, useMemo } from 'react'
 import UserContext from '../../contexts/userContext'
 import CartContext from '../../contexts/cartContext'
 import './CartPage.css'
@@ -115,4 +115,4 @@ const CartPage = () => {
   )
 }
 
-export default CartPage
+export default memo(CartPage)
