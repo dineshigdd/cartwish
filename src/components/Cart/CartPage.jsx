@@ -12,8 +12,8 @@ import { toast } from 'react-toastify'
 const CartPage = () => {   
 
   const user = useContext(UserContext);
-  const { cart , removeFromCart , updateCart , setCart } = useContext( CartContext);
-  
+  const { cart , removeFromCart , updateCart  } = useContext( CartContext);
+  console.log( cart )
   const subTotal = useMemo(()=>{
         let total = 0;
         cart.forEach(
@@ -45,12 +45,12 @@ const CartPage = () => {
     */
   const checkout = ()=>{
     const oldCart = [ ...cart ]
-    setCart([])
+    // setCart([])
     checkoutAPI().then(()=>{
         toast.success("order placed successfully!")        
     }).catch(() => {
         toast.error( "Something Went wrong")
-        setCart(oldCart )
+        // setCart(oldCart )
     })
   } 
 

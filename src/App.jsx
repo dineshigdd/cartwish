@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import UserContext from './contexts/userContext'
 import CartContext from './contexts/cartContext'
 import { ToastContainer, toast } from 'react-toastify'
@@ -12,9 +12,44 @@ import 'react-toastify/dist/ReactToastify.css'
 
 setAuthToken( getJwt());
 
+const reducer = ( cart , action ) => {  
+    switch( action.type ){
+          case "ADD_TO_CART":
+            const updatedCart = [ ...cart ];
+            const { product , quantity } = action.payload;
+            const productIndex = updatedCart.findIndex( item => item.product._id === product._id );
+
+              if( productIndex === -1 ){
+                  updatedCart.push({ 
+                    product: product, 
+                    quantity: quantity
+                  })
+              }else{
+                  updatedCart[ productIndex ].quantity +=  quantity;
+              }
+
+              
+              return updatedCart;                          
+
+          case "REVERT_CART":                         
+                return action.payload.cart;
+
+          case "REMOVE_FROM_CART":                
+              const oldCart = [ ...cart ];                 
+              const newCart = oldCart.filter( item => item.product._id !== action.payload.id )
+              return newCart;
+
+          case "GET_CART":
+            return action.payload.products;
+       
+      }
+  } 
+
+
 const App = () => {
   const [user, setUser ] = useState( null ); 
-  const [ cart, setCart ] = useState([])
+  // const [ cart, setCart ] = useState([]);
+  const [ cart, dispatch ] = useReducer( reducer,[]);
 
   useEffect(()=> {
     try{
@@ -34,18 +69,16 @@ const App = () => {
    
   },[]);
 
+ 
+
+  // const addToCart = ( product, quantity ) => {
   const addToCart = ( product, quantity ) => {
-      const updatedCart = [ ...cart ];
-      const productIndex = updatedCart.findIndex( item => item.product._id === product._id );
-
-     if( productIndex === -1 ){
-        updatedCart.push({ product, quantity })
-     }else{
-       updatedCart[ productIndex ].quantity += quantity;
-     }
-
-      setCart( updatedCart )
-
+      dispatch({ 
+        type:"ADD_TO_CART",
+        payload:{ product, quantity } 
+      })
+            
+      
       addToCartAPI( product._id, quantity )
         .then( res =>  {
             toast.success( "Product Added Succesfully!" )
@@ -53,44 +86,46 @@ const App = () => {
         })
         .catch( err => {
            toast.error( "Failed to add product!")
-          setCart( cart )
+           dispatch  ( { type:"REVERT_CART", payload : { cart }})
         })
+          
   }
 
-  const removeFromCart = ( id ) => {
-      const oldCart = [ ...cart ]
-      const newCart = oldCart.filter( item => item.product._id !== id )
-      setCart( newCart )
+  const removeFromCart = ( id ) => {        
+      dispatch( {
+        type:"REMOVE_FROM_CART",
+        payload:{ id }
+      })
+    
 
       removeFromCartAPI( id )
       .catch( err => {
         toast.error( "Somthing went wrong!")
-        setCart( oldCart )
+       dispatch  ( { type:"REVERT_CART", payload : { cart }})
       })
   }
 
   const updateCart = ( type , id ) => {
-    const oldCart = [ ... cart ];
     const updatedCart = [ ... cart ];
     const productIndex = updatedCart.findIndex( item =>  item.product._id === id )
 
     if( type === 'increase' ){
       updatedCart[ productIndex ].quantity += 1   
-       setCart( updatedCart )
+      dispatch({ type:"GET_CART", payload: { products: updatedCart }})
 
       increaseProductAPI( id ).catch( err => { 
         toast.err("something went wrong!")
-        setCart( oldCart )
+        dispatch  ( { type:"REVERT_CART", payload : { cart }})
       })
     }
 
     if( type === 'decrease' ){
        updatedCart[ productIndex ].quantity -= 1    
-       setCart( updatedCart )
+       dispatch({ type:"GET_CART", payload: { products: updatedCart }})
 
        decreaseProductAPI( id ).catch( err => { 
         toast.err("something went wrong!")
-        setCart( oldCart )
+        dispatch  ( { type:"REVERT_CART", payload : { cart }})
       })
     }
 
@@ -99,7 +134,7 @@ const App = () => {
 
   const getCart = () =>{
      getCartAPI().then( res => {
-        setCart( res.data )
+        dispatch({ type:"GET_CART", payload: { products:res.data }})
      }).catch( error => {
        toast.error( "something went wrong!  ")
      })
@@ -111,9 +146,10 @@ const App = () => {
     }
   }, [ user ])
 
+  
   return (
     <UserContext.Provider value={ user }>
-    <CartContext.Provider value={{ cart , addToCart , removeFromCart , updateCart , setCart }}>
+    <CartContext.Provider value={{ cart, addToCart , removeFromCart , updateCart  }}>
     <div className='app'>
         <Navbar />
         <main>
