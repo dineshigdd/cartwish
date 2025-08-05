@@ -7,29 +7,24 @@ import { NavLink, useSearchParams } from 'react-router-dom'
 import { object } from 'zod/v4-mini'
 import Pagination from '../Common/Pagination'
 import SingleProduct from '../SingleProduct/SingleProductPage'
+import useProductList from '../../hooks/useProductList'
 
 const ProductsList = () => {
-  const [ page, setPage ] = useState( 1 )
+  
   const [ search, setSearch ] = useSearchParams();
   const category = search.get("category");
   const searchQuery = search.get("search");
   const [ sortBy , setSortBy ] = useState("");
   const [ sortedProducts, setSortedProducts ] = useState([])
 
-  const { data , error , isLoading } =  useData('/products' , {
-      params :{
-      search: searchQuery,
-      category,
-      perPage:10,//tells how many products would appear in a page
-      page,
-    },
-  },[ searchQuery,  category, page ]);
+  const { data , error , isLoading, fetchNextPage } =  useProductList({
+    search: searchQuery,
+    category,
+    perPage:10,
+  });
    
 
-  useEffect(()=>{    
-    setPage( 1 )
-  }, [category , searchQuery ])
-
+   
   const skeletons = [1,2,3,4,5,6,7,8];
 
   {/* for pagination */}
@@ -48,7 +43,7 @@ const ProductsList = () => {
       if ( scrollTop + clientHeight >= scrollHeight - 1 && 
           !isLoading && data && page < data.totalPages ){
         console.log( "Reached to bottom");
-        setPage( ( prev ) => prev + 1 )
+        fetchNextPage()
       }
     }
 

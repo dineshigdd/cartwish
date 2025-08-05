@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../utils/api-client';
 
+/**
 const useData = ( endpoint ,  customConfig , deps ) => {
 
   const [ data, setData ] = useState(null);
@@ -29,5 +30,23 @@ const useData = ( endpoint ,  customConfig , deps ) => {
   return { data, error , isLoading }
   
 }
+**/
+import { useQuery } from '@tanstack/react-query';
 
+const useData = ( 
+    endpoint ,  
+    customConfig = {} , 
+    queryKey , 
+    staleTime = 300000 
+  ) => {
+
+    const fetchFuntion = () => apiClient.get( endpoint, customConfig ).then( res => res.data );
+
+    return useQuery({ 
+      queryKey: queryKey,
+      queryFn: fetchFuntion,
+      staleTime: staleTime,
+    });
+  
+}
 export default useData;

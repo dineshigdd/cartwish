@@ -6,11 +6,17 @@ import ProductCardSkeleton from '../Products/ProductCardSkeleton'
 
 const FeaturedProducts = () => {
 
-    const { data , error , isLoading } =  useData('/products',{
+/*    const { data , error , isLoading } =  useData('/products',{
       params:{
         perPage: 3                                                                                                                                                                                              ,
       }
-    },[])
+    },[]) */
+
+    const { data , error , isLoading } =  useData('/products/', {
+      params:{
+        perPage: 3                                                                                                                                                                                              ,
+      }
+    },["products","featured"], 10*60*60*1000)
 
     const skeletons = [1,2,3]
   return (
